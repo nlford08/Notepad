@@ -51,7 +51,7 @@ public class SMSReceiver extends BroadcastReceiver {
                     sender = PhoneNumberUtils.extractNetworkPortion(sender);
             }
             
-            if(senderRecognized(sender)){
+            if(true){ // TODO obviously need to change this...
 
                     // The message IS for us; don't put it into the user's inbox
                     // XXX: offer this feature back to ODK Tables (along with manifest priority change)
@@ -108,9 +108,7 @@ public class SMSReceiver extends BroadcastReceiver {
             
     	
     	// We need to save the message to our notes database.
-    	
-    	// SMSReceiver doesn't implement Context, so we can't use this as an argument.
-    	// mDbHelper = new NotesDbAdapter(this);
+    	mDbHelper = new NotesDbAdapter(c);
     	
     	// For now, just use the first word as the title
         String title = words[0];
@@ -120,20 +118,8 @@ public class SMSReceiver extends BroadcastReceiver {
         for (int i = 1; i < words.length; i++) {
         	body += words + " ";
         }
-        
-        // Again, since this isn't an activity, it doesn't have context, and
-        // we can't use our database.  Can we create a context out of this?
-/*
-        if (mRowId == null) {
-            long id = mDbHelper.createNote(title, body);
-            if (id > 0) {
-                mRowId = id;
-            }
-        } else {
-            mDbHelper.updateNote(mRowId, title, body);
-        }
-*/    	
-    	
+
+        long id = mDbHelper.createNote(title, body);
     	
     	/*  Here is the original body of this function.  Since for now, we just want
     	 * to grab all text messages, we make a note no matter what here.
