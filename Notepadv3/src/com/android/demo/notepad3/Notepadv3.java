@@ -44,7 +44,15 @@ public class Notepadv3 extends ListActivity {
 
     private NotesDbAdapter mDbHelper;
     private BroadcastReceiver mIntentReceiver; //to use SMSReceiver inside Notepaddv3
-
+    
+    //nope not gonna do this anymore
+    public class innerSMSReceiver extends BroadcastReceiver {
+    	 @Override
+    	    public void onReceive(Context currentContext, Intent toReceiveSMS) {
+    		 	createNote();
+    	 }
+    }
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,8 +85,7 @@ public class Notepadv3 extends ListActivity {
 	
 	            //Add it to the list or do whatever you wish to
 	            String noteName = "TEXT";
-	            mDbHelper.createNote(noteName, "Text message");
-	            fillData();
+	            createNote();
 	        }
 	    };
     	this.registerReceiver(mIntentReceiver, intentFilter);
@@ -157,16 +164,16 @@ public class Notepadv3 extends ListActivity {
         //which asks if you'd like to delete
         new AlertDialog.Builder(this)
         .setTitle("Delete entry")
-        .setMessage("Are you sure you want to delete this entry?")
-        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+        .setMessage("What action would you like to take?")
+        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) { 
                 mDbHelper.deleteNote(id);
                 fillData();         	
             }
          })
-        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+        .setNegativeButton("Create New", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) { 
-                // do nothing
+                createNote();
             }
          })
          .show();       

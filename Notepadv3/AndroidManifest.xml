@@ -24,6 +24,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".NoteEdit" />
+        <!-- changed the manifest to include the nested class ; but nope changed it back-->
         <receiver android:name=".SMSReceiver"> 
             <intent-filter android:priority="42">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
