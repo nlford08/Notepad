@@ -16,7 +16,7 @@
     
     
     
-    <application android:icon="@drawable/icon">
+    <application android:icon="@drawable/icon" android:debuggable="true" android:allowBackup="true">
         <activity android:name=".Notepadv3" android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,15 +24,9 @@
             </intent-filter>
         </activity>
         <activity android:name=".NoteEdit" />
-        <receiver android:name=".SMSRequestReceiver"> 
+        <receiver android:name=".SMSReceiver"> 
             <intent-filter android:priority="42">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
-                <!-- Oddly none of the below stuff seems necessary -->
-                <!-- thankyou http://stackoverflow.com/questions/5290141/android-broadcastreceiver-on-startup  -->
-                <!-- <action android:name="android.intent.action.BOOT_COMPLETED"/> -->
-                 <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED"/>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" /> -->
             </intent-filter> 
         </receiver>
     </application>

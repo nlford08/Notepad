@@ -16,8 +16,13 @@
 
 package com.android.demo.notepad3;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -28,6 +33,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.AdapterView.AdapterContextMenuInfo;
+import android.widget.TextView;
 
 public class Notepadv3 extends ListActivity {
     private static final int ACTIVITY_CREATE=0;
@@ -37,18 +43,48 @@ public class Notepadv3 extends ListActivity {
     private static final int DELETE_ID = Menu.FIRST + 1;
 
     private NotesDbAdapter mDbHelper;
+    private BroadcastReceiver mIntentReceiver; //to use SMSReceiver inside Notepaddv3
 
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.notes_list);
+        
         mDbHelper = new NotesDbAdapter(this);
         mDbHelper.open();
         fillData();
         registerForContextMenu(getListView());
     }
+    
+    //hee April 16
+    //using SMSReceiver inside notepadv3
+    //sample file
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        IntentFilter intentFilter = new IntentFilter("SMSReceiver.intent.MAIN");
+        mIntentReceiver = new BroadcastReceiver() {
+	        @Override
+	        public void onReceive(Context context, Intent intent) {
+	            String msg = intent.getStringExtra("get_msg");
+	
+	            //Process the sms format and extract body &amp; phoneNumber
+	            msg = msg.replace("\n", "");
+	            String body = msg.substring(msg.lastIndexOf(":")+1, msg.length());
+	            String pNumber = msg.substring(0,msg.lastIndexOf(":"));
+	
+	            //Add it to the list or do whatever you wish to
+	            String noteName = "TEXT";
+	            mDbHelper.createNote(noteName, "Text message");
+	            fillData();
+	        }
+	    };
+    	this.registerReceiver(mIntentReceiver, intentFilter);
+    }
+    
+    
     private void fillData() {
         Cursor notesCursor = mDbHelper.fetchAllNotes();
         startManagingCursor(notesCursor);
@@ -108,11 +144,32 @@ public class Notepadv3 extends ListActivity {
     }
 
     @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
+    protected void onListItemClick(ListView l, View v, int position, final long id) {
         super.onListItemClick(l, v, position, id);
+        /*
         Intent i = new Intent(this, NoteEdit.class);
         i.putExtra(NotesDbAdapter.KEY_ROWID, id);
-        startActivityForResult(i, ACTIVITY_EDIT);
+        startActivityForResult(i, ACTIVITY_EDIT);*/
+        
+        //edit: hee April 15 11:00pm
+        //can click on the item
+        //and creates dialog box
+        //which asks if you'd like to delete
+        new AlertDialog.Builder(this)
+        .setTitle("Delete entry")
+        .setMessage("Are you sure you want to delete this entry?")
+        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) { 
+                mDbHelper.deleteNote(id);
+                fillData();         	
+            }
+         })
+        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) { 
+                // do nothing
+            }
+         })
+         .show();       
     }
 
     @Override

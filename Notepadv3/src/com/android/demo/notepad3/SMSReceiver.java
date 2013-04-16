@@ -25,11 +25,18 @@ import android.util.Log;
 public class SMSReceiver extends BroadcastReceiver {
     protected static final String LOG_TAG = "G2L SMSReceiver";
     protected static int G2L_MESSAGE_AGE_LIMIT = 5 * 60 * 1000; // = 5 minutes
-
+    private Notepadv3 noteapp;
+    
+    public SMSReceiver(Notepadv3 noteapp) {
+    	super();
+    	this.noteapp = noteapp;
+    }
+    
     // This method is called when the BroadcastReceiver is receiving an Intent broadcast.
     @Override
     public void onReceive(Context currentContext, Intent toReceiveSMS)
-    {
+    {		
+    		
             // Unwrap SMS Bundle from "Intent" parameter
             Bundle smsBundle = toReceiveSMS.getExtras();
             
